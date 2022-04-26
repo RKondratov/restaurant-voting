@@ -1,7 +1,7 @@
 package ru.graduation.restaurantvoting.web.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,12 +14,14 @@ import ru.graduation.restaurantvoting.repository.VotingResultRepository;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.Calendar;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.checkNew;
+import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.checkVotingDate;
 
 @RestController
 @RequestMapping(value = UserController.REST_URL)
+@Slf4j
 public class UserController {
     @Autowired
     protected VotingResultRepository votingResultRepository;
@@ -28,12 +30,12 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VotingResult> create(@Valid @RequestBody VotingResult votingResult) {
-        Calendar date = Calendar.getInstance();
-        date.setTime(votingResult.getRegistered());
-        if (date.get(Calendar.HOUR_OF_DAY) >= 11) {
-            return ResponseEntity.status(FORBIDDEN).body(votingResult);
+        checkNew(votingResult);
+        if (checkVotingDate(votingResult)) {
+            return ResponseEntity.status(UNPROCESSABLE_ENTITY).body(votingResult);
         }
-        VotingResult created = votingResultRepository.save(votingResult);
+        log.info("create {}", votingResult);
+        final VotingResult created = votingResultRepository.save(votingResult);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();

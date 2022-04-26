@@ -1,5 +1,6 @@
 package ru.graduation.restaurantvoting.web.admin;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
@@ -13,10 +14,12 @@ import ru.graduation.restaurantvoting.repository.MealRepository;
 import javax.validation.Valid;
 import java.net.URI;
 
+import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.checkNew;
 
 @RestController
 @RequestMapping(value = AdminMealController.REST_URL)
+@Slf4j
 public class AdminMealController extends AbstractAdminController {
     @Autowired
     protected MealRepository mealRepository;
@@ -26,7 +29,8 @@ public class AdminMealController extends AbstractAdminController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Meal> create(@Valid @RequestBody Meal meal) {
         checkNew(meal);
-        Meal created = mealRepository.save(meal);
+        log.info("create {}", meal);
+        final Meal created = mealRepository.save(meal);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -37,6 +41,8 @@ public class AdminMealController extends AbstractAdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(allEntries = true)
     public void update(@Valid @RequestBody Meal meal, @PathVariable int mealId) {
+        log.info("update meal with id = {}", mealId);
+        assureIdConsistent(meal, mealId);
         mealRepository.save(meal);
     }
 

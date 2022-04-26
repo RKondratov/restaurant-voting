@@ -1,5 +1,6 @@
 package ru.graduation.restaurantvoting.web;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import ru.graduation.restaurantvoting.model.VotingResult;
 import ru.graduation.restaurantvoting.repository.MealRepository;
 import ru.graduation.restaurantvoting.repository.VotingResultRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import static java.util.stream.Collectors.groupingBy;
 
 @RestController
 @RequestMapping(value = CommonController.REST_URL)
+@Slf4j
 public class CommonController {
     @Autowired
     protected MealRepository mealRepository;
@@ -30,18 +33,21 @@ public class CommonController {
 
     @GetMapping("/meals")
     public List<Meal> getMeals() {
+        log.info("getMeals");
         return mealRepository.findAll();
     }
 
     @GetMapping("/meals/{restaurantId}")
     public List<Meal> getMealsByRestaurant(@PathVariable int restaurantId) {
+        log.info("getMealsByRestaurant with id = {}", restaurantId);
         return mealRepository.findAllByRestaurantId(restaurantId);
     }
 
     @GetMapping("/votes")
     public Map<Restaurant, Long> getVotingResult() {
+        log.info("getVotingResult");
         final List<VotingResult> list = new ArrayList<>();
-        votingResultRepository.findAll().stream().collect(groupingBy(VotingResult::getUser))
+        votingResultRepository.findAllTodayVotes(LocalDate.now().atStartOfDay()).stream().collect(groupingBy(VotingResult::getUser))
                 .forEach((user, votingResults) -> {
                     votingResults.sort((VotingResult v1, VotingResult v2) ->
                             v2.getRegistered().compareTo(v1.getRegistered()));

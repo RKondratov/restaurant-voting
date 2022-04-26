@@ -1,5 +1,6 @@
 package ru.graduation.restaurantvoting.web.admin;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,12 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.checkNew;
 
 @RestController
 @RequestMapping(value = AdminRestaurantController.REST_URL)
+@Slf4j
 public class AdminRestaurantController extends AbstractAdminController {
     @Autowired
     protected RestaurantRepository restaurantRepository;
@@ -26,18 +29,21 @@ public class AdminRestaurantController extends AbstractAdminController {
 
     @GetMapping
     public List<Restaurant> getRestaurants() {
+        log.info("getRestaurants");
         return restaurantRepository.findAll();
     }
 
     @GetMapping("/{restaurantId}")
     public ResponseEntity<Restaurant> getRestaurant(@PathVariable int id) {
+        log.info("get restaurant with id = {}", id);
         return ResponseEntity.of(restaurantRepository.findById(id));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Restaurant> create(@Valid @RequestBody Restaurant restaurant) {
         checkNew(restaurant);
-        Restaurant created = restaurantRepository.save(restaurant);
+        log.info("create {}", restaurant);
+        final Restaurant created = restaurantRepository.save(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -48,6 +54,8 @@ public class AdminRestaurantController extends AbstractAdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(allEntries = true)
     public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable int restaurantId) {
+        assureIdConsistent(restaurant, restaurantId);
+        log.info("update restaurant with id = {}", restaurantId);
         restaurantRepository.save(restaurant);
     }
 

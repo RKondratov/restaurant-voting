@@ -6,7 +6,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -21,7 +21,7 @@ import java.util.Date;
 public class VotingResult extends BaseEntity {
     @Column(name = "registered", columnDefinition = "timestamp default now()")
     @NotNull
-    private Date registered = new Date();
+    private LocalDateTime registered;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
