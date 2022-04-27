@@ -3,6 +3,7 @@ package ru.graduation.restaurantvoting.util.validation;
 import lombok.experimental.UtilityClass;
 import ru.graduation.restaurantvoting.HasId;
 import ru.graduation.restaurantvoting.exception.IllegalRequestDataException;
+import ru.graduation.restaurantvoting.model.Meal;
 import ru.graduation.restaurantvoting.model.VotingResult;
 
 import java.time.LocalDate;
@@ -36,5 +37,17 @@ public class ValidationUtil {
         final LocalDateTime checkTime =
                 LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 11, 0);
         return votingResult.getRegistered().isAfter(checkTime);
+    }
+
+    public static void checkVote(VotingResult votingResult) {
+        if (votingResult.getRestaurant().isNew() || votingResult.getUser().isNew()) {
+            throw new IllegalRequestDataException("Restaurant or User must be with (id!=null)");
+        }
+    }
+
+    public static void checkMeal(Meal meal) {
+        if (meal.getRestaurant().isNew()) {
+            throw new IllegalRequestDataException("Restaurant must be with (id!=null)");
+        }
     }
 }

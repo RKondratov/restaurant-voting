@@ -2,7 +2,6 @@ package ru.graduation.restaurantvoting.web.admin;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.chec
 public class AdminRestaurantController extends AbstractAdminController {
     @Autowired
     protected RestaurantRepository restaurantRepository;
-
     static final String REST_URL = BASE_ADMIN_URL + "/restaurants";
 
     @GetMapping
@@ -34,9 +32,9 @@ public class AdminRestaurantController extends AbstractAdminController {
     }
 
     @GetMapping("/{restaurantId}")
-    public ResponseEntity<Restaurant> getRestaurant(@PathVariable int id) {
-        log.info("get restaurant with id = {}", id);
-        return ResponseEntity.of(restaurantRepository.findById(id));
+    public ResponseEntity<Restaurant> getRestaurant(@PathVariable int restaurantId) {
+        log.info("get restaurant with id = {}", restaurantId);
+        return ResponseEntity.of(restaurantRepository.findById(restaurantId));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -44,7 +42,7 @@ public class AdminRestaurantController extends AbstractAdminController {
         checkNew(restaurant);
         log.info("create {}", restaurant);
         final Restaurant created = restaurantRepository.save(restaurant);
-        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+        final URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(uriOfNewResource).body(created);
@@ -52,7 +50,6 @@ public class AdminRestaurantController extends AbstractAdminController {
 
     @PutMapping(value = "/{restaurantId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(allEntries = true)
     public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable int restaurantId) {
         assureIdConsistent(restaurant, restaurantId);
         log.info("update restaurant with id = {}", restaurantId);

@@ -1,11 +1,11 @@
 package ru.graduation.restaurantvoting.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -20,4 +20,9 @@ public class Restaurant extends BaseEntity {
     @NotEmpty
     @Size(max = 128)
     private String name;
+
+    public Restaurant(int id, String name){
+        this.id = id;
+        this.name = name;
+    }
 }

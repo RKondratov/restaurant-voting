@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import ru.graduation.restaurantvoting.HasId;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 @Access(AccessType.FIELD)
@@ -20,7 +21,7 @@ public abstract class BaseEntity implements Persistable<Integer>, HasId {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(accessMode = Schema.AccessMode.READ_WRITE)
     protected Integer id;
 
     public int id() {

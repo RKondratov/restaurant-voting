@@ -16,8 +16,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
-import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.checkNew;
-import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.checkVotingDate;
+import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.*;
 
 @RestController
 @RequestMapping(value = UserController.REST_URL)
@@ -31,12 +30,13 @@ public class UserController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VotingResult> create(@Valid @RequestBody VotingResult votingResult) {
         checkNew(votingResult);
+        checkVote(votingResult);
         if (checkVotingDate(votingResult)) {
             return ResponseEntity.status(UNPROCESSABLE_ENTITY).body(votingResult);
         }
         log.info("create {}", votingResult);
         final VotingResult created = votingResultRepository.save(votingResult);
-        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+        final URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(uriOfNewResource).body(created);
