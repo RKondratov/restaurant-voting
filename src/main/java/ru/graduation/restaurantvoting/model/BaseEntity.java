@@ -9,7 +9,6 @@ import org.springframework.util.Assert;
 import ru.graduation.restaurantvoting.HasId;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 @Access(AccessType.FIELD)

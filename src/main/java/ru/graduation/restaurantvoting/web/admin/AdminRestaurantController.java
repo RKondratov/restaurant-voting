@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.graduation.restaurantvoting.model.Restaurant;
 import ru.graduation.restaurantvoting.repository.RestaurantRepository;
+import ru.graduation.restaurantvoting.to.RestaurantTo;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import static ru.graduation.restaurantvoting.util.DataUtil.createRestaurantFromTo;
+import static ru.graduation.restaurantvoting.util.DataUtil.updateRestaurantFromTo;
 import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.checkNew;
 
@@ -38,10 +41,10 @@ public class AdminRestaurantController extends AbstractAdminController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> create(@Valid @RequestBody Restaurant restaurant) {
-        checkNew(restaurant);
-        log.info("create {}", restaurant);
-        final Restaurant created = restaurantRepository.save(restaurant);
+    public ResponseEntity<Restaurant> create(@Valid @RequestBody RestaurantTo restaurantTo) {
+        checkNew(restaurantTo);
+        log.info("create {}", restaurantTo);
+        final Restaurant created = restaurantRepository.save(createRestaurantFromTo(restaurantTo));
         final URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -50,10 +53,11 @@ public class AdminRestaurantController extends AbstractAdminController {
 
     @PutMapping(value = "/{restaurantId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable int restaurantId) {
-        assureIdConsistent(restaurant, restaurantId);
+    public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int restaurantId) {
+        assureIdConsistent(restaurantTo, restaurantId);
         log.info("update restaurant with id = {}", restaurantId);
-        restaurantRepository.save(restaurant);
+        restaurantRepository.findById(restaurantId)
+                .ifPresent(restaurant -> restaurantRepository.save(updateRestaurantFromTo(restaurant, restaurantTo)));
     }
 
     @DeleteMapping("/{restaurantId}")

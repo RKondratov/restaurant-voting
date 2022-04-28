@@ -17,22 +17,22 @@ class CommonControllerTest extends AbstractControllerTest {
 
     @Test
     @WithMockUser(roles = USER)
-    void getMeals() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "meals/"))
+    void getDishes() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "dishes/"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEAL_MATCHER.contentJson(MEAL_FIRST, MEAL_SECOND, MEAL_THIRD));
+                .andExpect(DISH_MATCHER.contentJson(DISH_FIRST, DISH_SECOND, DISH_THIRD));
     }
 
     @Test
     @WithMockUser(roles = ADMIN)
-    void getMealsByRestaurant() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "meals/" + RESTAURANT_ID))
+    void getDishesByRestaurant() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "dishes/" + RESTAURANT_ID))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEAL_MATCHER.contentJson(MEAL_FIRST, MEAL_SECOND));
+                .andExpect(DISH_MATCHER.contentJson(DISH_FIRST, DISH_SECOND));
     }
 
     @Test
@@ -42,7 +42,6 @@ class CommonControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_TO_MATCHER.contentJson(VOTE_FIRST, VOTE_SECOND));;
-
+                .andExpect(VOTE_TO_MATCHER.contentJson(VOTE_FIRST, VOTE_SECOND));
     }
 }

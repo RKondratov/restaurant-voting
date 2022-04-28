@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.graduation.restaurantvoting.model.Meal;
+import ru.graduation.restaurantvoting.model.Dish;
 import ru.graduation.restaurantvoting.model.VotingResult;
-import ru.graduation.restaurantvoting.repository.MealRepository;
+import ru.graduation.restaurantvoting.repository.DishRepository;
 import ru.graduation.restaurantvoting.repository.VotingResultRepository;
 import ru.graduation.restaurantvoting.to.VotingResultTo;
 
@@ -24,22 +24,22 @@ import static java.util.stream.Collectors.groupingBy;
 @Slf4j
 public class CommonController {
     @Autowired
-    protected MealRepository mealRepository;
+    protected DishRepository dishRepository;
     @Autowired
     protected VotingResultRepository votingResultRepository;
 
     static final String REST_URL = "/api/common";
 
-    @GetMapping("/meals")
-    public List<Meal> getMeals() {
-        log.info("getMeals");
-        return mealRepository.findAll();
+    @GetMapping("/dishes")
+    public List<Dish> getDishes() {
+        log.info("getDishes");
+        return dishRepository.findAll();
     }
 
-    @GetMapping("/meals/{restaurantId}")
-    public List<Meal> getMealsByRestaurant(@PathVariable int restaurantId) {
-        log.info("getMealsByRestaurant with id = {}", restaurantId);
-        return mealRepository.findAllByRestaurantId(restaurantId);
+    @GetMapping("/dishes/{restaurantId}")
+    public List<Dish> getDishesByRestaurant(@PathVariable int restaurantId) {
+        log.info("getDishesByRestaurant with id = {}", restaurantId);
+        return dishRepository.findAllByRestaurantId(restaurantId);
     }
 
     @GetMapping("/votes")

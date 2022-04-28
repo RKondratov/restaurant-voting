@@ -7,8 +7,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.graduation.restaurantvoting.model.Restaurant;
-import ru.graduation.restaurantvoting.repository.MealRepository;
+import ru.graduation.restaurantvoting.repository.DishRepository;
 import ru.graduation.restaurantvoting.repository.RestaurantRepository;
+import ru.graduation.restaurantvoting.to.RestaurantTo;
 import ru.graduation.restaurantvoting.util.JsonUtil;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -16,13 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.graduation.restaurantvoting.util.DataUtil.createRestaurantFromTo;
 import static ru.graduation.restaurantvoting.web.TestData.*;
 
-class AdminRestaurantControllerTest extends AdminMealControllerTest {
+class AdminRestaurantControllerTest extends AdminDishControllerTest {
     @Autowired
     private RestaurantRepository restaurantRepository;
     @Autowired
-    private MealRepository mealRepository;
+    private DishRepository dishRepository;
     private static final String REST_URL = AdminRestaurantController.REST_URL + "/";
 
     @Test
@@ -63,10 +65,10 @@ class AdminRestaurantControllerTest extends AdminMealControllerTest {
     @Test
     @WithMockUser(roles = ADMIN)
     void create() throws Exception {
-        Restaurant restaurant = new Restaurant("newRes");
+        RestaurantTo restaurantTo = new RestaurantTo(null, "newRes");
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(restaurant)))
+                .content(JsonUtil.writeValue(restaurantTo)))
                 .andExpect(status().isCreated());
 
         Restaurant created = RESTAURANT_MATCHER.readFromJson(action);
@@ -76,13 +78,13 @@ class AdminRestaurantControllerTest extends AdminMealControllerTest {
     @Test
     @WithMockUser(roles = ADMIN)
     void update() throws Exception {
-        Restaurant update = new Restaurant("Update");
+        RestaurantTo update = new RestaurantTo(RESTAURANT_ID, "Update");
         perform(MockMvcRequestBuilders.put(REST_URL + RESTAURANT_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(update)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        RESTAURANT_MATCHER.assertMatch(restaurantRepository.getById(RESTAURANT_ID), update);
+        RESTAURANT_MATCHER.assertMatch(restaurantRepository.getById(RESTAURANT_ID), createRestaurantFromTo(update));
     }
 
     @Test
@@ -92,7 +94,7 @@ class AdminRestaurantControllerTest extends AdminMealControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertFalse(restaurantRepository.findById(RESTAURANT_ID).isPresent());
-        assertTrue(mealRepository.findAllByRestaurantId(RESTAURANT_ID).isEmpty());
+        assertTrue(dishRepository.findAllByRestaurantId(RESTAURANT_ID).isEmpty());
     }
 
     @Test

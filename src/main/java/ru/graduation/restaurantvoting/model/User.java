@@ -5,7 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.util.CollectionUtils;
-import ru.graduation.restaurantvoting.HasId;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;

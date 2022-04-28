@@ -3,8 +3,8 @@ package ru.graduation.restaurantvoting.util.validation;
 import lombok.experimental.UtilityClass;
 import ru.graduation.restaurantvoting.HasId;
 import ru.graduation.restaurantvoting.exception.IllegalRequestDataException;
-import ru.graduation.restaurantvoting.model.Meal;
-import ru.graduation.restaurantvoting.model.VotingResult;
+import ru.graduation.restaurantvoting.to.DishTo;
+import ru.graduation.restaurantvoting.to.VoteTo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,21 +32,21 @@ public class ValidationUtil {
         }
     }
 
-    public static boolean checkVotingDate(VotingResult votingResult) {
+    public static boolean checkVotingDate(VoteTo voteTo) {
         final LocalDate now = LocalDate.now();
         final LocalDateTime checkTime =
                 LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 11, 0);
-        return votingResult.getRegistered().isAfter(checkTime);
+        return voteTo.getRegistered().isAfter(checkTime);
     }
 
-    public static void checkVote(VotingResult votingResult) {
-        if (votingResult.getRestaurant().isNew() || votingResult.getUser().isNew()) {
+    public static void checkVote(VoteTo voteTo) {
+        if (voteTo.getRestaurant().isNew() || voteTo.getUserId() == null) {
             throw new IllegalRequestDataException("Restaurant or User must be with (id!=null)");
         }
     }
 
-    public static void checkMeal(Meal meal) {
-        if (meal.getRestaurant().isNew()) {
+    public static void checkDish(DishTo dish) {
+        if (dish.getRestaurant().isNew()) {
             throw new IllegalRequestDataException("Restaurant must be with (id!=null)");
         }
     }

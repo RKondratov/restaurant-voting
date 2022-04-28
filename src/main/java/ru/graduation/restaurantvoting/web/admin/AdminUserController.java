@@ -15,7 +15,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-import static ru.graduation.restaurantvoting.util.UserUtil.*;
+import static ru.graduation.restaurantvoting.util.DataUtil.*;
 import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.checkNew;
 
@@ -44,7 +44,7 @@ public class AdminUserController extends AbstractAdminController {
     public ResponseEntity<User> create(@Valid @RequestBody UserTo userTo) {
         checkNew(userTo);
         log.info("create {}", userTo);
-        final User created = userRepository.save(prepareToSave(createNewFromTo(userTo)));
+        final User created = userRepository.save(prepareUserToSave(createUserFromTo(userTo)));
         final URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -57,7 +57,7 @@ public class AdminUserController extends AbstractAdminController {
         assureIdConsistent(userTo, userId);
         log.info("update user with id = {}", userId);
         userRepository.findById(userId)
-                .ifPresent(user -> userRepository.save(prepareToSave(updateFromTo(user, userTo))));
+                .ifPresent(user -> userRepository.save(prepareUserToSave(updateUserFromTo(user, userTo))));
     }
 
     @DeleteMapping("/{userId}")

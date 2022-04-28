@@ -8,8 +8,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.graduation.restaurantvoting.model.VotingResult;
 import ru.graduation.restaurantvoting.repository.RestaurantRepository;
-import ru.graduation.restaurantvoting.repository.UserRepository;
 import ru.graduation.restaurantvoting.repository.VotingResultRepository;
+import ru.graduation.restaurantvoting.to.VoteTo;
 import ru.graduation.restaurantvoting.util.JsonUtil;
 import ru.graduation.restaurantvoting.web.AbstractControllerTest;
 
@@ -22,16 +22,14 @@ class UserControllerTest extends AbstractControllerTest {
     @Autowired
     protected VotingResultRepository votingResultRepository;
     @Autowired
-    protected UserRepository userRepository;
-    @Autowired
     protected RestaurantRepository restaurantRepository;
     public static final String REST_URL = UserController.REST_URL + "/";
 
     @Test
     @WithMockUser(roles = USER)
     void create() throws Exception {
-        VotingResult vote = new VotingResult(LocalDate.now().atStartOfDay(),
-                restaurantRepository.getById(RESTAURANT_ID), userRepository.getById(USER_ID));
+        VoteTo vote = new VoteTo(LocalDate.now().atStartOfDay(),
+                restaurantRepository.getById(RESTAURANT_ID), USER_ID);
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(vote)))
@@ -43,8 +41,8 @@ class UserControllerTest extends AbstractControllerTest {
     @Test
     @WithMockUser(roles = ADMIN)
     void createForbidden() throws Exception {
-        VotingResult vote = new VotingResult(LocalDate.now().atStartOfDay(),
-                restaurantRepository.getById(RESTAURANT_ID), userRepository.getById(USER_ID));
+        VoteTo vote = new VoteTo(LocalDate.now().atStartOfDay(),
+                restaurantRepository.getById(RESTAURANT_ID), USER_ID);
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(vote)))

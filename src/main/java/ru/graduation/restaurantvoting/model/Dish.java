@@ -12,18 +12,18 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
-@Table(name = "meal", uniqueConstraints = @UniqueConstraint(columnNames = {"restaurant_id", "meal_name"},
-        name = "restaurant_meal_idx"))
+@Table(name = "dish", uniqueConstraints = @UniqueConstraint(columnNames = {"restaurant_id", "dish_name"},
+        name = "restaurant_dish_idx"))
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString(callSuper = true)
-public class Meal extends BaseEntity {
-    @Column(name = "meal_name")
+public class Dish extends BaseEntity {
+    @Column(name = "dish_name")
     @NotEmpty
     @Size(max = 256)
-    private String mealName;
+    private String dishName;
 
     @Column(name = "price", nullable = false)
     @NotNull

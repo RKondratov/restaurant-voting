@@ -14,7 +14,7 @@ VALUES ('restaurant1'),
        ('restaurant2'),
        ('restaurant3');
 
-INSERT INTO meal (restaurant_id, meal_name, price, registered)
+INSERT INTO dish (restaurant_id, dish_name, price, registered)
 VALUES (1, 'soup', 500, date_trunc('day', sysdate)),
        (1, 'pancakes', 1000, date_trunc('day', sysdate)),
        (3, 'fish', 500, date_trunc('day', sysdate));
