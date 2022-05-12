@@ -3,7 +3,6 @@ package ru.graduation.restaurantvoting.to;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import ru.graduation.restaurantvoting.model.Restaurant;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,23 +14,23 @@ import java.util.Date;
 public class DishTo extends BaseTo {
     @NotBlank
     @Size(min = 1, max = 256)
-    String dishName;
+    String name;
 
     @NotNull
     Integer price;
 
     @NotNull
-    Date registered;
+    Date creationDate;
 
     @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
     @NotNull
-    Restaurant restaurant;
+    Integer restaurantId;
 
-    public DishTo(Integer id, String dishName, Integer price, Date registered, Restaurant restaurant) {
+    public DishTo(Integer id, String name, Integer price, Date creationDate, Integer restaurantId) {
         super(id);
-        this.dishName = dishName;
+        this.name = name;
         this.price = price;
-        this.registered = registered;
-        this.restaurant = restaurant;
+        this.creationDate = creationDate;
+        this.restaurantId = restaurantId;
     }
 }

@@ -5,17 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.graduation.restaurantvoting.model.Dish;
 import ru.graduation.restaurantvoting.repository.DishRepository;
 import ru.graduation.restaurantvoting.to.DishTo;
-import ru.graduation.restaurantvoting.util.DataUtil;
 
 import javax.validation.Valid;
 import java.net.URI;
 
-import static ru.graduation.restaurantvoting.util.DataUtil.createDishFromTo;
+import static ru.graduation.restaurantvoting.util.DishUtil.createDishFromTo;
+import static ru.graduation.restaurantvoting.util.DishUtil.updateDishFromTo;
 import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.*;
 
 @RestController
@@ -27,6 +28,7 @@ public class AdminDishController extends AbstractAdminController {
     static final String REST_URL = BASE_ADMIN_URL + "/dishes";
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Dish> create(@Valid @RequestBody DishTo dishTo) {
         checkNew(dishTo);
         checkDish(dishTo);
@@ -38,17 +40,24 @@ public class AdminDishController extends AbstractAdminController {
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
-    @PutMapping(value = "/{dishId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody DishTo dishTo, @PathVariable int dishId) {
-        log.info("update dish with id = {}", dishId);
-        assureIdConsistent(dishTo, dishId);
-        dishRepository.findById(dishId).ifPresent(dish -> dishRepository.save(DataUtil.updateDishFromTo(dish, dishTo)));
+    @Transactional
+    public void update(@Valid @RequestBody DishTo dishTo, @PathVariable int id) {
+        log.info("update dish with id = {}", id);
+        assureIdConsistent(dishTo, id);
+        dishRepository.findById(id).ifPresent(dish -> dishRepository.save(updateDishFromTo(dish, dishTo)));
     }
 
-    @DeleteMapping("/{dishId}")
+    @GetMapping("/{id}")
+    public ResponseEntity<Dish> get(@PathVariable int id) {
+        log.info("get dish by id = {}", id);
+        return ResponseEntity.of(dishRepository.findById(id));
+    }
+
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int dishId) {
-        super.delete(dishRepository, dishId);
+    public void delete(@PathVariable int id) {
+        super.delete(dishRepository, id);
     }
 }

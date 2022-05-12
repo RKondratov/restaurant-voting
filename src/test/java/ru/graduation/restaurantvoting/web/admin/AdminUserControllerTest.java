@@ -25,7 +25,7 @@ class AdminUserControllerTest extends AbstractControllerTest {
 
     @Test
     @WithMockUser(roles = ADMIN)
-    void getUsers() throws Exception {
+    void getAll() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -35,7 +35,7 @@ class AdminUserControllerTest extends AbstractControllerTest {
 
     @Test
     @WithMockUser(roles = ADMIN)
-    void getUser() throws Exception {
+    void get() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + ADMIN_ID))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -46,7 +46,7 @@ class AdminUserControllerTest extends AbstractControllerTest {
     @Test
     @WithMockUser(roles = ADMIN)
     void getNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND))
+        perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND_ID))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
@@ -94,7 +94,7 @@ class AdminUserControllerTest extends AbstractControllerTest {
     @Test
     @WithMockUser(roles = ADMIN)
     void deleteNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + NOT_FOUND))
+        perform(MockMvcRequestBuilders.delete(REST_URL + NOT_FOUND_ID))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
     }

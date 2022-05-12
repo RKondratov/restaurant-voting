@@ -7,7 +7,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -26,22 +26,22 @@ import java.util.Set;
 public class User extends BaseEntity implements Serializable {
 
     @Column(name = "first_name", nullable = false)
-    @NotEmpty
+    @NotBlank
     @Size(max = 128)
     private String firstName;
 
     @Column(name = "last_name", nullable = false)
-    @NotEmpty
+    @NotBlank
     @Size(max = 128)
     private String lastName;
 
     @Column(name = "email", nullable = false, unique = true)
-    @NotEmpty
+    @NotBlank
     @Size(max = 128)
     private String email;
 
     @Column(name = "password", nullable = false)
-    @NotEmpty
+    @NotBlank
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(min = 5, max = 128)
     private String password;
@@ -60,12 +60,12 @@ public class User extends BaseEntity implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
 
-
     public User(Integer id, String firstName, String lastName, String email, String password, Role role, Role... roles) {
         this(id, firstName, lastName, email, password, new Date(), EnumSet.of(role, roles));
     }
 
-    public User(Integer id, String firstName, String lastName, String email, String password, Date registered, Collection<Role> roles) {
+    private User(Integer id, String firstName, String lastName, String email,
+                 String password, Date registered, Collection<Role> roles) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

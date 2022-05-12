@@ -14,13 +14,19 @@ VALUES ('restaurant1'),
        ('restaurant2'),
        ('restaurant3');
 
-INSERT INTO dish (restaurant_id, dish_name, price, registered)
-VALUES (1, 'soup', 500, date_trunc('day', sysdate)),
-       (1, 'pancakes', 1000, date_trunc('day', sysdate)),
-       (3, 'fish', 500, date_trunc('day', sysdate));
+INSERT INTO vote (user_id, restaurant_id, registered)
+VALUES (1, 3, date_trunc('day', current_date) + 0.3),
+       (2, 3, date_trunc('day', current_date) + 0.3),
+       (2, 2, date_trunc('day', current_date) + 0.33),
+       (1, 1, date_trunc('day', current_date) - 1),
+       (2, 2, date_trunc('day', current_date) - 1),
+       (3, 3, date_trunc('day', current_date) - 1),
+       (3, 2, date_trunc('day', current_date) - 0.9);
 
-INSERT INTO voting_result (user_id, restaurant_id, registered)
-VALUES (1, 3, date_trunc('day', sysdate) + 0.3),
-       (2, 3, date_trunc('day', sysdate) + 0.3),
-       (2, 2, date_trunc('day', sysdate) + 0.33),
-       (3, 2, date_trunc('day', sysdate) - 0.9);
+INSERT INTO dish (restaurant_id, name, price, creation_date)
+VALUES (1, 'soup', 500, date_trunc('day', current_date)),
+       (1, 'pancakes', 1000, date_trunc('day', current_date)),
+       (1, 'soup2', 502, date_trunc('day', current_date - 2)),
+       (2, 'soup3', 502, date_trunc('day', current_date - 2)),
+       (3, 'soup4', 502, date_trunc('day', current_date - 2)),
+       (3, 'fish', 500, date_trunc('day', current_date));

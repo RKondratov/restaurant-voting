@@ -12,12 +12,14 @@ import ru.graduation.restaurantvoting.repository.RestaurantRepository;
 import ru.graduation.restaurantvoting.to.RestaurantTo;
 import ru.graduation.restaurantvoting.util.JsonUtil;
 
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.graduation.restaurantvoting.util.DataUtil.createRestaurantFromTo;
+import static ru.graduation.restaurantvoting.util.RestaurantUtil.createRestaurantFromTo;
 import static ru.graduation.restaurantvoting.web.TestData.*;
 
 class AdminRestaurantControllerTest extends AdminDishControllerTest {
@@ -29,7 +31,7 @@ class AdminRestaurantControllerTest extends AdminDishControllerTest {
 
     @Test
     @WithMockUser(roles = ADMIN)
-    void getRestaurants() throws Exception {
+    void getAll() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -39,7 +41,7 @@ class AdminRestaurantControllerTest extends AdminDishControllerTest {
 
     @Test
     @WithMockUser(roles = ADMIN)
-    void getRestaurant() throws Exception {
+    void get() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "1"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -50,7 +52,7 @@ class AdminRestaurantControllerTest extends AdminDishControllerTest {
     @Test
     @WithMockUser(roles = ADMIN)
     void getNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND))
+        perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND_ID))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
@@ -78,29 +80,29 @@ class AdminRestaurantControllerTest extends AdminDishControllerTest {
     @Test
     @WithMockUser(roles = ADMIN)
     void update() throws Exception {
-        RestaurantTo update = new RestaurantTo(RESTAURANT_ID, "Update");
-        perform(MockMvcRequestBuilders.put(REST_URL + RESTAURANT_ID)
+        RestaurantTo update = new RestaurantTo(ONE, "Update");
+        perform(MockMvcRequestBuilders.put(REST_URL + ONE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(update)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        RESTAURANT_MATCHER.assertMatch(restaurantRepository.getById(RESTAURANT_ID), createRestaurantFromTo(update));
+        RESTAURANT_MATCHER.assertMatch(restaurantRepository.getById(ONE), createRestaurantFromTo(update));
     }
 
     @Test
     @WithMockUser(roles = ADMIN)
     void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + RESTAURANT_ID))
+        perform(MockMvcRequestBuilders.delete(REST_URL + ONE))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertFalse(restaurantRepository.findById(RESTAURANT_ID).isPresent());
-        assertTrue(dishRepository.findAllByRestaurantId(RESTAURANT_ID).isEmpty());
+        assertFalse(restaurantRepository.findById(ONE).isPresent());
+        assertTrue(dishRepository.findAllByRestaurantIdAndCreationDate(ONE, new Date(), new Date()).isEmpty());
     }
 
     @Test
     @WithMockUser(roles = ADMIN)
     void deleteNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + NOT_FOUND))
+        perform(MockMvcRequestBuilders.delete(REST_URL + NOT_FOUND_ID))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
     }

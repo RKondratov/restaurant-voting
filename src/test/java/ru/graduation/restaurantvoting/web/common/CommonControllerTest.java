@@ -12,12 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.graduation.restaurantvoting.web.TestData.*;
 
 class CommonControllerTest extends AbstractControllerTest {
-
     public static final String REST_URL = CommonController.REST_URL + "/";
 
     @Test
     @WithMockUser(roles = USER)
-    void getDishes() throws Exception {
+    void getTodayDishes() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "dishes/"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -27,8 +26,8 @@ class CommonControllerTest extends AbstractControllerTest {
 
     @Test
     @WithMockUser(roles = ADMIN)
-    void getDishesByRestaurant() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "dishes/" + RESTAURANT_ID))
+    void getTodayDishesByRestaurant() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "dishes/restaurants/" + ONE))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -42,6 +41,6 @@ class CommonControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_TO_MATCHER.contentJson(VOTE_FIRST, VOTE_SECOND));
+                .andExpect(VOTE_RESULT_TO_MATCHER.contentJson(VOTE_FIRST, VOTE_SECOND));
     }
 }

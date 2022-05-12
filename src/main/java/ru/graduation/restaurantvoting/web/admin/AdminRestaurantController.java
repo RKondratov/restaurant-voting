@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.graduation.restaurantvoting.model.Restaurant;
@@ -15,8 +16,8 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-import static ru.graduation.restaurantvoting.util.DataUtil.createRestaurantFromTo;
-import static ru.graduation.restaurantvoting.util.DataUtil.updateRestaurantFromTo;
+import static ru.graduation.restaurantvoting.util.RestaurantUtil.createRestaurantFromTo;
+import static ru.graduation.restaurantvoting.util.RestaurantUtil.updateRestaurantFromTo;
 import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.graduation.restaurantvoting.util.validation.ValidationUtil.checkNew;
 
@@ -29,18 +30,19 @@ public class AdminRestaurantController extends AbstractAdminController {
     static final String REST_URL = BASE_ADMIN_URL + "/restaurants";
 
     @GetMapping
-    public List<Restaurant> getRestaurants() {
+    public List<Restaurant> getAll() {
         log.info("getRestaurants");
         return restaurantRepository.findAll();
     }
 
-    @GetMapping("/{restaurantId}")
-    public ResponseEntity<Restaurant> getRestaurant(@PathVariable int restaurantId) {
-        log.info("get restaurant with id = {}", restaurantId);
-        return ResponseEntity.of(restaurantRepository.findById(restaurantId));
+    @GetMapping("/{id}")
+    public ResponseEntity<Restaurant> get(@PathVariable int id) {
+        log.info("get restaurant with id = {}", id);
+        return ResponseEntity.of(restaurantRepository.findById(id));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Restaurant> create(@Valid @RequestBody RestaurantTo restaurantTo) {
         checkNew(restaurantTo);
         log.info("create {}", restaurantTo);
@@ -51,18 +53,19 @@ public class AdminRestaurantController extends AbstractAdminController {
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
-    @PutMapping(value = "/{restaurantId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int restaurantId) {
-        assureIdConsistent(restaurantTo, restaurantId);
-        log.info("update restaurant with id = {}", restaurantId);
-        restaurantRepository.findById(restaurantId)
+    @Transactional
+    public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
+        assureIdConsistent(restaurantTo, id);
+        log.info("update restaurant with id = {}", id);
+        restaurantRepository.findById(id)
                 .ifPresent(restaurant -> restaurantRepository.save(updateRestaurantFromTo(restaurant, restaurantTo)));
     }
 
-    @DeleteMapping("/{restaurantId}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int restaurantId) {
-        super.delete(restaurantRepository, restaurantId);
+    public void delete(@PathVariable int id) {
+        super.delete(restaurantRepository, id);
     }
 }
